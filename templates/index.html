@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Book Recommender System</title>
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding-top: 80px;
+        font-family: 'Inter', sans-serif;
+        background:
+            radial-gradient(
+                circle at 10% 10%,
+                rgba(124, 58, 237, 0.12),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 90% 30%,
+                rgba(59, 130, 246, 0.10),
+                transparent 30%
+            ),
+            #f7f8fc;
+        color: #1f2937;
+    }
+
+    .navbar {
+        position: fixed;
+        top: 15px;
+        left: 5%;
+        right: 5%;
+        min-height: 60px;
+        background: rgba(17, 24, 39, 0.92);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+    }
+
+    .navbar-brand {
+        color: #ffffff !important;
+        font-size: 21px;
+        font-weight: 800;
+        padding: 20px 25px;
+    }
+
+    .navbar-brand i {
+        margin-right: 8px;
+        color: #a78bfa;
+    }
+
+    .navbar-nav {
+        margin-left: 10px;
+    }
+
+    .navbar-nav > li > a {
+        color: #d1d5db !important;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 21px 18px;
+        transition: 0.3s ease;
+    }
+
+    .navbar-nav > li > a:hover {
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .hero {
+        text-align: center;
+        padding: 65px 20px 45px;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        margin-bottom: 20px;
+        background: rgba(124, 58, 237, 0.1);
+        border: 1px solid rgba(124, 58, 237, 0.2);
+        border-radius: 50px;
+        color: #7c3aed;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .hero h1 {
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+        font-size: 52px;
+        font-weight: 700;
+        background: linear-gradient(
+            135deg,
+            #111827,
+            #7c3aed,
+            #2563eb
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+        max-width: 650px;
+        margin: 18px auto 0;
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .books-section {
+        padding: 20px 0 70px;
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
+    .book-column {
+        width: 25%;
+        padding: 10px;
+    }
+
+    .book-card {
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        min-height: 470px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(229, 231, 235, 0.9);
+        border-radius: 20px;
+        padding: 14px;
+        box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+        transition:
+            transform 0.35s ease,
+            box-shadow 0.35s ease,
+            border-color 0.35s ease;
+    }
+
+    .book-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14);
+        border-color: rgba(124, 58, 237, 0.25);
+    }
+
+    .book-image-wrapper {
+        position: relative;
+        height: 300px;
+        overflow: hidden;
+        border-radius: 14px;
+        background: #eef0f5;
+    }
+
+    .book-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition:
+            transform 0.5s ease,
+            filter 0.5s ease;
+    }
+
+    .book-card:hover img {
+        transform: scale(1.07);
+        filter: brightness(0.88);
+    }
+
+    .book-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+            to top,
+            rgba(17, 24, 39, 0.55),
+            transparent 60%
+        );
+        opacity: 0;
+        transition: 0.3s ease;
+    }
+
+    .book-card:hover .book-overlay {
+        opacity: 1;
+    }
+
+    .view-book {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.95);
+        color: #111827;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none !important;
+        cursor: pointer;
+        transform: translateY(10px);
+        transition:
+            transform 0.3s ease,
+            color 0.3s ease,
+            background 0.3s ease;
+    }
+
+    .book-card:hover .view-book {
+        transform: translateY(0);
+    }
+
+    .view-book:hover {
+        color: #7c3aed;
+        background: #ffffff;
+        text-decoration: none !important;
+    }
+
+    .book-details {
+        padding: 18px 7px 8px;
+    }
+
+    .book-title {
+        margin: 0 0 7px;
+        color: #111827;
+        font-family: 'Playfair Display', serif;
+        font-size: 19px;
+        font-weight: 700;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .author {
+        margin: 0 0 15px;
+        color: #7c3aed;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .book-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+    }
+
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .stat i {
+        color: #7c3aed;
+    }
+
+    .rating i {
+        color: #f59e0b;
+    }
+
+    .footer {
+        padding: 35px 20px;
+        text-align: center;
+        background: #111827;
+        color: #9ca3af;
+        margin-top: 20px;
+    }
+
+    .footer strong {
+        color: #ffffff;
+    }
+
+    @media (max-width: 1200px) {
+        .book-column {
+            width: 33.333%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        body {
+            padding-top: 70px;
+        }
+
+        .navbar {
+            left: 2%;
+            right: 2%;
+            top: 8px;
+        }
+
+        .navbar-brand {
+            font-size: 17px;
+            padding-left: 15px;
+        }
+
+        .navbar-nav > li > a {
+            padding: 15px;
+        }
+
+        .hero {
+            padding-top: 45px;
+        }
+
+        .hero h1 {
+            font-size: 38px;
+        }
+
+        .book-column {
+            width: 50%;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .hero h1 {
+            font-size: 32px;
+        }
+
+        .hero p {
+            font-size: 14px;
+        }
+
+        .book-column {
+            width: 100%;
+        }
+
+        .book-card {
+            min-height: 450px;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="container">
+
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="fa-solid fa-book-open"></i>
+            Book Recommender
+        </a>
+
+        <ul class="nav navbar-nav">
+            <li>
+                <a href="{{ url_for('index') }}">
+                    <i class="fa-solid fa-house"></i>
+                    Home
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('recommend_ui') }}">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Recommend
+                </a>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">
+        <i class="fa-solid fa-fire"></i>
+        MOST POPULAR BOOKS
+    </div>
+
+    <h1>
+        Discover Your Next Favorite Book
+    </h1>
+
+    <p>
+        Explore the most popular books loved by readers.
+        Find something inspiring, entertaining, and worth
+        adding to your reading list.
+    </p>
+</section>
+
+<section class="books-section">
+    <div class="container">
+
+        <div class="row">
+
+            {% for i in range(book_name|length) %}
+
+            <div class="book-column">
+
+                <div class="book-card">
+
+                    <div class="book-image-wrapper">
+
+                        <img
+                            src="{{ image[i] }}"
+                            alt="{{ book_name[i] }}"
+                            loading="lazy"
+                        >
+
+                        <div class="book-overlay">
+
+                            <a
+                                href="{{ url_for('recommend_ui') }}"
+                                class="view-book"
+                            >
+                                <i class="fa-solid fa-book-open"></i>
+                                Explore Book
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    <div class="book-details">
+
+                        <h4 class="book-title">
+                            {{ book_name[i] }}
+                        </h4>
+
+                        <p class="author">
+                            <i class="fa-solid fa-user-pen"></i>
+                            {{ author[i] }}
+                        </p>
+
+                        <div class="book-stats">
+
+                            <div class="stat">
+                                <i class="fa-solid fa-thumbs-up"></i>
+                                <span>
+                                    {{ votes[i] }} votes
+                                </span>
+                            </div>
+
+                            <div class="stat rating">
+                                <i class="fa-solid fa-star"></i>
+                                <span>
+                                    {{ rating[i] }}
+                                </span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <p>
+        <strong>Book Recommender System</strong>
+        &nbsp;•&nbsp;
+        Discover. Read. Recommend.
+    </p>
+</footer>
+
+
+</body>
+
+</html>
